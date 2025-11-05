@@ -2,7 +2,6 @@ package com.github.kr328.clash.design
 
 import android.content.Context
 import android.view.View
-import android.widget.RadioButton
 import androidx.core.widget.addTextChangedListener
 import com.github.kr328.clash.design.adapter.AppAdapter
 import com.github.kr328.clash.design.component.AccessControlQuickMenu
@@ -41,6 +40,8 @@ class AccessControlQuickDesign(
         AccessControlQuickMenu(context, binding.menuView, uiStore, requests)
     }
 
+    private var isInitialized = false
+
     val apps: List<AppInfo>
         get() = adapter.apps
 
@@ -67,23 +68,32 @@ class AccessControlQuickDesign(
 
         binding.mainList.recyclerList.applyLinearAdapter(context, adapter)
 
-        binding.modeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            currentMode = when (checkedId) {
-                binding.modeAcceptAll.id -> AccessControlMode.AcceptAll
-                binding.modeAcceptSelected.id -> AccessControlMode.AcceptSelected
-                binding.modeDenySelected.id -> AccessControlMode.DenySelected
-                else -> AccessControlMode.AcceptAll
-            }
-            updateUiState()
+        when (currentMode) {
+            AccessControlMode.AcceptAll -> binding.modeAcceptAll.isChecked = true
+            AccessControlMode.AcceptSelected -> binding.modeAcceptSelected.isChecked = true
+            AccessControlMode.DenySelected -> binding.modeDenySelected.isChecked = true
         }
 
         binding.selectedCount = selected.size
         binding.canSelectApps = canSelectApps()
 
-        when (currentMode) {
-            AccessControlMode.AcceptAll -> binding.modeAcceptAll.isChecked = true
-            AccessControlMode.AcceptSelected -> binding.modeAcceptSelected.isChecked = true
-            AccessControlMode.DenySelected -> binding.modeDenySelected.isChecked = true
+        binding.modeRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            if (!isInitialized) {
+                return@setOnCheckedChangeListener
+            }
+
+            val newMode = when (checkedId) {
+                binding.modeAcceptAll.id -> AccessControlMode.AcceptAll
+                binding.modeAcceptSelected.id -> AccessControlMode.AcceptSelected
+                binding.modeDenySelected.id -> AccessControlMode.DenySelected
+                else -> return@setOnCheckedChangeListener
+            }
+
+            if (newMode != currentMode) {
+                currentMode = newMode
+                updateUiState()
+                requests.trySend(Request.ChangeMode(newMode))
+            }
         }
 
         binding.menuView.setOnClickListener {
@@ -97,6 +107,8 @@ class AccessControlQuickDesign(
                 launch {
                     try {
                         requestSearch()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     } finally {
                         withContext(NonCancellable) {
                             rebindAll()
@@ -107,6 +119,7 @@ class AccessControlQuickDesign(
         }
 
         updateUiState()
+        isInitialized = true
     }
 
     private fun canSelectApps(): Boolean {
@@ -130,20 +143,20 @@ class AccessControlQuickDesign(
 
     private suspend fun requestSearch() {
         coroutineScope {
-            val binding = DialogSearchBinding
+            val searchBinding = DialogSearchBinding
                 .inflate(context.layoutInflater, context.root, false)
-            val adapter = AppAdapter(context, selected, ::notifySelectionChanged)
+            val searchAdapter = AppAdapter(context, selected, ::notifySelectionChanged)
             val dialog = FullScreenDialog(context)
             val filter = Channel<Unit>(Channel.CONFLATED)
 
-            dialog.setContentView(binding.root)
+            dialog.setContentView(searchBinding.root)
 
-            binding.surface = dialog.surface
-            binding.mainList.applyLinearAdapter(context, adapter)
-            binding.keywordView.addTextChangedListener {
+            searchBinding.surface = dialog.surface
+            searchBinding.mainList.applyLinearAdapter(context, searchAdapter)
+            searchBinding.keywordView.addTextChangedListener {
                 filter.trySend(Unit)
             }
-            binding.closeView.setOnClickListener {
+            searchBinding.closeView.setOnClickListener {
                 dialog.dismiss()
             }
 
@@ -152,7 +165,7 @@ class AccessControlQuickDesign(
             }
 
             dialog.setOnShowListener {
-                binding.keywordView.requestTextInput()
+                searchBinding.keywordView.requestTextInput()
             }
 
             dialog.show()
@@ -160,9 +173,9 @@ class AccessControlQuickDesign(
             while (isActive) {
                 filter.receive()
 
-                val keyword = binding.keywordView.text?.toString() ?: ""
+                val keyword = searchBinding.keywordView.text?.toString() ?: ""
 
-                val apps: List<AppInfo> = if (keyword.isEmpty()) {
+                val filteredApps: List<AppInfo> = if (keyword.isEmpty()) {
                     emptyList()
                 } else {
                     withContext(Dispatchers.Default) {
@@ -173,7 +186,7 @@ class AccessControlQuickDesign(
                     }
                 }
 
-                adapter.patchDataSet(adapter::apps, apps, false, AppInfo::packageName)
+                searchAdapter.patchDataSet(searchAdapter::apps, filteredApps, false, AppInfo::packageName)
 
                 delay(200)
             }
