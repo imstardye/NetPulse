@@ -63,6 +63,7 @@ class AccessControlQuickDesign(
 
     init {
         binding.self = this
+        binding.surface = surface
 
         binding.activityBarLayout.applyFrom(context)
 
