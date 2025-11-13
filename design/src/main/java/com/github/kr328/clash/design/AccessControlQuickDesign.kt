@@ -61,6 +61,12 @@ class AccessControlQuickDesign(
         }
     }
 
+    suspend fun updateSelectedCount() {
+        withContext(Dispatchers.Main) {
+            binding.selectedCount = selected.size
+        }
+    }
+
     init {
         binding.self = this
 
@@ -129,12 +135,6 @@ class AccessControlQuickDesign(
     private fun updateUiState() {
         binding.canSelectApps = canSelectApps()
         binding.selectedCount = selected.size
-    }
-
-    suspend fun updateSelectedCount() {
-        withContext(Dispatchers.Main) {
-            binding.selectedCount = selected.size
-        }
     }
 
     private fun notifySelectionChanged() {
