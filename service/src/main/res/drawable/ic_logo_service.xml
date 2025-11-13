@@ -2,9 +2,30 @@
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24"
-    android:tint="@color/color_clash">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M 4,20 L 4,4 L 8,4 L 16,20 L 20,20 L 20,4 L 16,4 L 8,20 Z" />
+    android:viewportHeight="24">
+    <group
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:translateX="4.8"
+        android:translateY="4.8">
+        <path
+            android:fillColor="#22d3ee"
+            android:pathData="M 6,5 L 6,19 C 6,20.4 6.8,21 8,20.7 L 9.5,20.3 C 10.3,20 10.8,19.4 10.8,18.7 L 10.8,5 Z"/>
+
+        <path
+            android:fillColor="#a855f7"
+            android:pathData="M 16.5,5.5 C 16.5,4.9 16.9,4.4 17.5,4.2 L 19,3.7 C 20.2,3.3 21,4.2 21,5.2 L 21,19 H 16.5 Z"/>
+
+        <path
+            android:fillColor="#3b82f6"
+            android:pathData="M 10,6.2 L 14.8,17 H 16.7 L 11.9,6.2 Z"/>
+
+        <path
+            android:fillColor="#22d3ee"
+            android:pathData="M 8.5,3.8 m -1.2,0 a 1.2,1.2 0 1,1 2.4,0 a 1.2,1.2 0 1,1 -2.4,0"/>
+
+        <path
+            android:fillColor="#a855f7"
+            android:pathData="M 18.7,20.6 m -1.2,0 a 1.2,1.2 0 1,1 2.4,0 a 1.2,1.2 0 1,1 -2.4,0"/>
+    </group>
 </vector>
