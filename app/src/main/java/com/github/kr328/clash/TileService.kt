@@ -81,7 +81,7 @@ class TileService : TileService() {
         else
             currentProfile
 
-        tile.icon = Icon.createWithResource(this, R.drawable.ic_logo_service)
+        tile.icon = Icon.createWithResource(this, R.drawable.ic_logo_tile)
 
         tile.updateTile()
     }
