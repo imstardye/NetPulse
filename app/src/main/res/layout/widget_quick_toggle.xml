@@ -71,20 +71,20 @@
             android:visibility="gone" />
 
         <FrameLayout
-            android:id="@+id/widget_toggle_button"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:background="@drawable/widget_quick_toggle_button_bg">
+             android:id="@+id/widget_toggle_button"
+             android:layout_width="60dp"
+             android:layout_height="60dp"
+             android:layout_gravity="center"
+             android:background="@drawable/widget_quick_toggle_button_bg">
 
-            <ImageView
-                android:id="@+id/widget_toggle_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/widget_quick_toggle_content_start"
-                android:src="@drawable/ic_widget_rocket"
-                android:tint="@color/widget_quick_toggle_icon_inactive" />
-        </FrameLayout>
+             <ImageView
+                 android:id="@+id/widget_toggle_icon"
+                 android:layout_width="36dp"
+                 android:layout_height="36dp"
+                 android:layout_gravity="center"
+                 android:contentDescription="@string/widget_quick_toggle_content_start"
+                 android:src="@drawable/ic_widget_rocket"
+                 android:tint="@color/widget_quick_toggle_icon_inactive" />
+         </FrameLayout>
     </FrameLayout>
 </LinearLayout>
